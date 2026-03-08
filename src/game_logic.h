@@ -6,6 +6,7 @@
 #include "cards.h"
 #include <cstdlib>
 #include <ctime>
+#include <iomanip>
 #include <iostream>
 #include <string>
 
@@ -95,27 +96,30 @@ void shuffleCards(Card cards[], int size) {
 }
 
 void displayBoard(const GameState &game) {
-    cout << "\n--------------- Board ---------------" << endl;
+    cout << "\n-------------- Board ---------------\n";
 
-    Node<Card> * cur = game.board.start;
+    Node<Card> *cur = game.board.start;
     int pos = 1;
 
     while (cur != NULL) {
         if (pos < 10) cout << "[0" << pos << "] ";
         else cout << "[" << pos << "] ";
 
-        if (cur->elem.state == HIDDEN) {
-            cout << "?";
-        } else if (cur->elem.state == REVEALED) {
-            cout << cur->elem.symbol;
-        }
+        char display = '?';
+        if (cur->elem.state == REVEALED)
+            display = cur->elem.symbol;
 
-        cout << "   ";
+        cout << left << setw(6) << display;
+        
         if (pos % 5 == 0) cout << "\n"; //quebra de linha tabuleiro
         
         cur = cur->next;
         pos++;
     }
+    
+    if ((pos - 1) % 5 != 0 && (pos - 1) > 0) 
+        cout << "\n";
+    
     cout << "=================================================\n";
     cout << game.player1.name << " Pontos: " << game.player1.score 
          << " | Inventario: " << game.player1.inventory.amount << " item(s)\n";
@@ -127,9 +131,8 @@ void displayBoard(const GameState &game) {
 Node<Card>* getCardAt(DoublyLinkedList<Card>& list, int pos) {
     if (pos < 1 || pos > list.amount) return NULL;
     Node<Card>* cur = list.start;
-    for (int i = 1; i < pos; i++) {
+    for (int i = 1; i < pos; i++) 
         cur = cur->next;
-    }
     return cur;
 }
 
