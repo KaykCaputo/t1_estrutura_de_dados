@@ -18,15 +18,19 @@ struct DoublyLinkedList
 {
     int amount;
     Node<T> *start;
+    Node<T> *end;
 };
 
+// Inicializa a lista vazia.
 template <typename T>
 void create(DoublyLinkedList<T> &list)
 {
     list.amount = 0;
     list.start = NULL;
+    list.end = NULL;
 }
 
+// Libera todos os nos e reseta os metadados da lista.
 template <typename T>
 void destroy(DoublyLinkedList<T> &list)
 {
@@ -39,16 +43,19 @@ void destroy(DoublyLinkedList<T> &list)
     }
 
     list.amount = 0;
+    list.end = NULL;
 }
 
+// Retorna true quando a lista nao possui elementos.
 template <typename T>
-bool isEmpty(DoublyLinkedList<T> list)
+bool isEmpty(const DoublyLinkedList<T> &list)
 {
     return list.amount == 0;
 }
 
+// Verifica se um elemento existe na lista.
 template <typename T>
-bool hasIn(DoublyLinkedList<T> &list, T element)
+bool hasIn(const DoublyLinkedList<T>& list, const T& element)
 {
     Node<T> *p = list.start;
     while (p != NULL)
@@ -60,6 +67,7 @@ bool hasIn(DoublyLinkedList<T> &list, T element)
     return false;
 }
 
+// Insere um item na posicao informada.
 template <typename T>
 void insert(DoublyLinkedList<T> &list, T element, int pos)
 {
@@ -72,7 +80,10 @@ void insert(DoublyLinkedList<T> &list, T element, int pos)
     newElement->prev = NULL;
 
     if (list.start == NULL)
+    {
         list.start = newElement;
+        list.end = newElement;
+    }
     else if (pos == 1)
     {
         newElement->next = list.start;
@@ -90,6 +101,8 @@ void insert(DoublyLinkedList<T> &list, T element, int pos)
 
         if (current->next != NULL)
             current->next->prev = newElement;
+        else
+            list.end = newElement;
 
         current->next = newElement;
     }
@@ -97,14 +110,32 @@ void insert(DoublyLinkedList<T> &list, T element, int pos)
     list.amount++;
 }
 
+// Remove o item da posicao informada.
 template <typename T>
-void remove(DoublyLinkedList<T> &list, T element, int pos)
+void remove(DoublyLinkedList<T> &list, int pos)
 {
     if(list.amount==0)
         throw "Underflow!";
     if(pos < 1 || pos > list.amount)
         throw "Invalid position!";
-    //Continue this later
+    Node<T>* toDelete = list.start;
+
+    for (int i = 1; i < pos; i++) {
+        toDelete = toDelete->next;
+    }
+
+    if (toDelete->prev != NULL)
+        toDelete->prev->next = toDelete->next;
+    else
+        list.start = toDelete->next;
+
+    if (toDelete->next != NULL)
+        toDelete->next->prev = toDelete->prev;
+    else
+        list.end = toDelete->prev;
+
+    delete toDelete;
+    list.amount--;
 }
 
 #endif
